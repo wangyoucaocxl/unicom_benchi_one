@@ -1,0 +1,1 @@
+{"location": "/opt/intel/openvino/inference_engine/lib/intel64/libcpu_extension_avx2.so", "basefile1": "./model_fp/my_FP32", "basefile2": "./model_fp/my_FP16", "devices": "CPU"}
