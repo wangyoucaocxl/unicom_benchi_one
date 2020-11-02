@@ -1,0 +1,72 @@
+POST： /image/sync
+描述： 图片数据同步
+
+body:
+[
+    {
+        "personId": "0001",
+        "imageUrls": [
+            "https://image.image-host.com/0001/01.jpg",
+            "https://image.image-host.com/0001/02.jpg"
+        ]
+    }
+]
+
+response: 
+{
+    "successCount": 1,
+    "info": {
+        "0001": true
+    }
+}
+
+
+GET: http://fabx.aidong-ai.com/frock/api/fence?camerId=001
+描述： 获取电子围栏信息
+
+response:
+{
+    "ret": 1,
+    "data": {
+        "list": [
+            {
+                "vertexes": [
+                    [
+                        "494",
+                        "153"
+                    ],
+                    [
+                        "386",
+                        "678"
+                    ],
+                    [
+                        "1451",
+                        "714"
+                    ],
+                    [
+                        "1160",
+                        "194"
+                    ],
+                    [
+                        "495",
+                        "152"
+                    ],
+                    [
+                        "495",
+                        "152"
+                    ],
+                    [
+                        "495",
+                        "152"
+                    ]
+                ],
+                "_id": "5f9f6c9d61c97875a462910d",
+                "camerId": "001",
+                "name": "测试",
+                "createtime": 1604283549680,
+                "updatetime": 1604283549680
+            }
+        ],
+        "count": 1
+    }
+}
