@@ -35,12 +35,8 @@ cors.init_app(app)
 main = Blueprint('main', __name__)
 app.register_blueprint(main,url_prefix = "")
 
-camer_list = ["rtsp://demo.easydss.com:10054/shilei_kernel_test",
-              "rtsp://demo.easydss.com:10054/xDClMP5Mg",
-              "rtsp://demo.easydss.com:10554/aidong_demo",
-              "rtsp://admin:ad123456@192.168.199.220/Streaming/Channels/1"
-              ]
-camer_count = 1
+camer_list = []
+camer_count = 0
 q_put_img = deque(maxlen=1)
 
 
@@ -89,15 +85,8 @@ def clearCapture(capture):
 @app.route('/countCameras',methods = ["GET"])
 def countCameras():
     global camer_count
-    try:
-        camer_count = request.args.get("name")
-        print("camer_count", not camer_count)
-        print("camer_count", type(camer_count))
-        if not camer_count:
-            camer_count = str(1)
-    except:
-        camer_count = str(1)
-    print("------>", camer_count)
+    camer_count = request.args.get("name")
+    print(camer_count)
     return camer_count
 
 
@@ -105,32 +94,44 @@ def countCameras():
 @app.route('/detect_video1')
 def detect_video1():
     global camer_list
-    rtsp_addr = camer_list[0]
-    return Response(get_detect(rtsp_addr, "camera001"),
+    # get_detect()
+    number = 0
+    if len(camer_list)>=1:
+        number = camer_list[0]
+    return Response(get_detect(number),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route('/detect_video2')
 def detect_video2():
     global camer_list
-    rtsp_addr = camer_list[1]
-    return Response(get_detect(rtsp_addr, "camera002"),
+    # get_detect()
+    number = 0
+    if len(camer_list)>=2:
+        number = camer_list[1]
+    return Response(get_detect(number),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route('/detect_video3')
 def detect_video3():
     global camer_list
-    rtsp_addr = camer_list[2]
-    return Response(get_detect(rtsp_addr, "camera003"),
+    # get_detect()
+    number = 0
+    if len(camer_list)>=3:
+        number = camer_list[2]
+    return Response(get_detect(number),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route('/detect_video4')
 def detect_video4():
     global camer_list
-    rtsp_addr = camer_list[3]
-    return Response(get_detect(rtsp_addr, "camera004"),
+    # get_detect()
+    number = 0
+    if len(camer_list)>=4:
+        number = camer_list[3]
+    return Response(get_detect(number),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
-def put_data(camerId):
+def put_data():
     while True:
         time.sleep(0.5)
         try:
@@ -164,7 +165,7 @@ def put_data(camerId):
                 else:
                     ls = 0
 
-                para = {"camerId": camerId,
+                para = {"camerId": "camer001",
                         "workerNumber":"003" ,
                         "workerName":"caoxile",
                         "hat": lh,
@@ -184,11 +185,11 @@ def put_data(camerId):
 
             
 
-def read_video(dq, rtsp_addr):
+def read_video(dq):
     # video_reader = cv2.VideoCapture("rtsp://admin:ad123456@192.168.199.220/Streaming/Channels/1")
     # video_reader = cv2.VideoCapture("rtsp://demo.easydss.com:10554/aidong_demo")
     #video_reader = cv2.VideoCapture("rtsp://demo.easydss.com:10054/xDClMP5Mg")
-    #video_reader = cv2.VideoCapture("rtsp://demo.easydss.com:10054/shilei_kernel_test")
+    video_reader = cv2.VideoCapture("rtsp://demo.easydss.com:10054/shilei_kernel_test")
     #video_reader = cv2.VideoCapture("rtsp://demo.easydss.com:10054/Seven")
     
     # video_reader = cv2.VideoCapture("./test_video/benchi_test_video.mp4")
@@ -199,7 +200,6 @@ def read_video(dq, rtsp_addr):
     #video_reader.set(3, 1280)  
     #video_reader.set(4, 720)
     # video_reader.set(cv2.CAP_PROP_FPS, 25)
-    video_reader = cv2.VideoCapture(rtsp_addr)
     while True:
         time.sleep(0.03)
         ret1, img = video_reader.read()
@@ -210,7 +210,7 @@ def read_video(dq, rtsp_addr):
         else:
             dq.append(img)
 
-def read_video_vlc(dq, rtsp_addr):
+def read_video_vlc(dq):
      
     vlcInstance = vlc.Instance()
     # 机场内
@@ -219,8 +219,7 @@ def read_video_vlc(dq, rtsp_addr):
     # 记得换url,最好也和上面一样进行测试一下
     # url = "rtsp://demo.easydss.com:10554/200825"
     # url = "rtsp://demo.easydss.com:10554/aidong_demo"
-    # url = "rtsp://admin:ad123456@192.168.199.220/Streaming/Channels/1"
-    url = rtsp_addr
+    url = "rtsp://admin:ad123456@192.168.199.220/Streaming/Channels/1"
     m = vlcInstance.media_new(url)
     mp = vlc.libvlc_media_player_new_from_media(m)
      
@@ -291,22 +290,24 @@ def new_loc(lis1, lis2):
 
 
 
-def get_detect(rtsp_addr, camerId):
+def get_detect(id_video):
 
     global control_color
     dq = deque(maxlen=1)
-    t_read_video = threading.Thread(target=read_video, args=(dq, rtsp_addr))
+    t_read_video = threading.Thread(target=read_video, args=(dq,))
     # t_read_video = threading.Thread(target=read_video_vlc, args=(dq,))
-    t_put_data = threading.Thread(target=put_data, args=(camerId,))
+    t_put_data = threading.Thread(target=put_data)
     t_read_video.start() 
     t_put_data.start() 
     
     # myout = save_video(video_reader, "./video.mp4", sz)
     my_track_dict = {} #save the info of track_id
+    track_smooth_dict = {} #smooth the imshow
     
 
     save_file = mk_dir()
     num = 0    #有数据循环次数
+    success_num = 0 #有检测次数
     t1 = time.time()  #重新检测时间初始值
     my_result = {} #存储缓冲数据
 
