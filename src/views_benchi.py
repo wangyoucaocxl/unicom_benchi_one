@@ -1,9 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from __future__ import division, print_function, absolute_import
-from flask import Flask, render_template, Blueprint,Response
+import sys
+from flask import Flask, render_template, Blueprint,Response, request
 from src.person_detect_used import preson_detect
 from src.my_functions import *
+from urllib.request import urlretrieve
 #from concurrent.futures import ThreadPoolExecutor
 import threading
 import cv2
@@ -114,6 +116,45 @@ def detect_video4():
         number = camer_list[3]
     return Response(get_detect(number),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route('/image/sync', methods=['POST'])
+def image_sync():
+    body = json.loads(request.data.decode())
+
+    base_save_path = os.path.join(os.curdir, 'face_dlib/dataset') 
+    
+    if not isinstance(body, list):
+        return {'code': -1, 'msg':'request data invalid'}
+
+    success_info = {}
+    
+    for person_info in body:
+        if not 'personId' in person_info or not 'imageUrls' not in person_info or not person_info['imageUrls']:
+                continue
+
+        person_id = person_info['personId']
+        image_urls = person_info['imageUrls']
+        
+        try:
+            save_path =  os.path.join(base_save_path, person_id)
+
+            if not os.path.exists(save_path):
+                os.mkdir(save_path)
+
+            for image_url in image_urls:
+                image_name = image_url.split('/')[-1]
+                urlretrieve(image_url, os.path.join(save_path, image_name))
+                success_info[person_id] = True
+        except:
+            success_info[person_id] = False
+
+    
+    return {'code': 0, 'successCount': len(list(filter(lambda x: x, success_info.values()))), 'info': success_info}
+
+def get_fence(camera_id):
+    '''获取电子围栏'''
+    fence_res = requests.get(f'http://fabx.aidong-ai.com/frock/api/fence?camerId={camera_id}').json()
+    return fence_res['data']
 
 def put_data():
     while True:
