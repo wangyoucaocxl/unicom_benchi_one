@@ -114,7 +114,7 @@ def image_sync():
                 continue
 
         person_id = person_info['personId']
-        image_urls = person_info['imageUrls']
+        image_urls = person_info['imageUrls'] if 'imageUrls' in person_info else []
         
         try:
             save_path =  os.path.join(base_save_path, person_id)
