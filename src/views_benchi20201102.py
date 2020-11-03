@@ -1,11 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from __future__ import division, print_function, absolute_import
-import sys
-from flask import Flask, render_template, Blueprint,Response, request
+from flask import Flask, render_template, Blueprint,Response,request
 from src.person_detect_used import preson_detect
 from src.my_functions import *
-from urllib.request import urlretrieve
 #from concurrent.futures import ThreadPoolExecutor
 import threading
 import cv2
@@ -55,30 +53,46 @@ def clearCapture(capture):
     capture.release() 
     cv2.destroyAllWindows() 
   
-def getcountCameras(): 
-    global camer_list
-    n = 0 
+#def getcountCameras(): 
+#    global camer_list
+#    n = 0 
+#
+#    for i in range(10): 
+#     try: 
+#      cap = cv2.VideoCapture(i) 
+#      ret, frame = cap.read() 
+#
+#      if ret:
+#        camer_list.append(i)
+#        n += 1 
+#     except: 
+#      clearCapture(cap) 
+#      break 
+#    return str(n)
 
-    for i in range(10): 
-     try: 
-      cap = cv2.VideoCapture(i) 
-      ret, frame = cap.read() 
+#@app.route('/countCameras')
+#def countCameras(): 
+#    global camer_count
+#    return camer_count
 
-      if ret:
-        camer_list.append(i)
-        n += 1 
-     except: 
-      clearCapture(cap) 
-      break 
-    return str(n)
 
-@app.route('/countCameras')
-def countCameras(): 
+#@app.route('/countCameras/<int:camerId>')
+#def countCameras():
+#    #这里可以取到cameraId
+#    global camer_count
+#    return camer_count
+
+@app.route('/countCameras',methods = ["GET"])
+def countCameras():
     global camer_count
+    camer_count = request.args.get("name")
+    print(camer_count)
     return camer_count
 
-@app.route('/detect_video')
-def detect_video():
+
+
+@app.route('/detect_video1')
+def detect_video1():
     global camer_list
     # get_detect()
     number = 0
@@ -116,45 +130,6 @@ def detect_video4():
         number = camer_list[3]
     return Response(get_detect(number),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
-
-@app.route('/image/sync', methods=['POST'])
-def image_sync():
-    body = json.loads(request.data.decode())
-
-    base_save_path = os.path.join(os.curdir, 'face_dlib/dataset') 
-    
-    if not isinstance(body, list):
-        return {'code': -1, 'msg':'request data invalid'}
-
-    success_info = {}
-    
-    for person_info in body:
-        if not 'personId' in person_info or not 'imageUrls' not in person_info or not person_info['imageUrls']:
-                continue
-
-        person_id = person_info['personId']
-        image_urls = person_info['imageUrls']
-        
-        try:
-            save_path =  os.path.join(base_save_path, person_id)
-
-            if not os.path.exists(save_path):
-                os.mkdir(save_path)
-
-            for image_url in image_urls:
-                image_name = image_url.split('/')[-1]
-                urlretrieve(image_url, os.path.join(save_path, image_name))
-                success_info[person_id] = True
-        except:
-            success_info[person_id] = False
-
-    
-    return {'code': 0, 'successCount': len(list(filter(lambda x: x, success_info.values()))), 'info': success_info}
-
-def get_fence(camera_id):
-    '''获取电子围栏'''
-    fence_res = requests.get(f'http://fabx.aidong-ai.com/frock/api/fence?camerId={camera_id}').json()
-    return fence_res['data']
 
 def put_data():
     while True:
@@ -213,8 +188,8 @@ def put_data():
 def read_video(dq):
     # video_reader = cv2.VideoCapture("rtsp://admin:ad123456@192.168.199.220/Streaming/Channels/1")
     # video_reader = cv2.VideoCapture("rtsp://demo.easydss.com:10554/aidong_demo")
-    video_reader = cv2.VideoCapture("rtsp://demo.easydss.com:10054/xDClMP5Mg")
-    #video_reader = cv2.VideoCapture("rtsp://demo.easydss.com:10054/shilei_kernel_test")
+    #video_reader = cv2.VideoCapture("rtsp://demo.easydss.com:10054/xDClMP5Mg")
+    video_reader = cv2.VideoCapture("rtsp://demo.easydss.com:10054/shilei_kernel_test")
     #video_reader = cv2.VideoCapture("rtsp://demo.easydss.com:10054/Seven")
     
     # video_reader = cv2.VideoCapture("./test_video/benchi_test_video.mp4")
