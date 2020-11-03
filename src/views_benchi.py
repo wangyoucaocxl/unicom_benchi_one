@@ -119,7 +119,11 @@ def image_sync():
         try:
             save_path =  os.path.join(base_save_path, person_id)
 
-            if not os.path.exists(save_path):
+            # remove all images in every sync time
+            if os.path.exists(save_path):
+                os.removedirs(save_path)
+
+            if not os.path.exists(save_path) and image_urls:
                 os.mkdir(save_path)
 
             for image_url in image_urls:
