@@ -121,7 +121,7 @@ def image_sync():
 
             # remove all images in every sync time
             if os.path.exists(save_path):
-                os.removedirs(save_path)
+                os.system(f'rm -rf {save_path}')
 
             if not os.path.exists(save_path) and image_urls:
                 os.mkdir(save_path)
