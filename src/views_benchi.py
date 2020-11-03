@@ -110,7 +110,7 @@ def image_sync():
     success_info = {}
     
     for person_info in body:
-        if not 'personId' in person_info or not 'imageUrls' in person_info or not person_info['imageUrls']:
+        if not 'personId' in person_info:
                 continue
 
         person_id = person_info['personId']
