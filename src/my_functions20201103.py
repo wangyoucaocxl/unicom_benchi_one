@@ -61,13 +61,13 @@ def cup_intersect(a1,a2,b1,b2):
             return [0, None]
 
 #判断一个多边形的点是否在另一个多边形的内部
-def inner_point(point1, points2):
-    # filename = "./myguard.json"
-    # if not os.path.exists(filename):
-        # print("myguard.json is error!")    
-    # with open(filename, "r") as f:
-        # load_dict = json.load(f) #多边形的顶点坐标
-    # points2 = np.array(load_dict["base1"])    
+def inner_point(point1):
+    filename = "./myguard.json"
+    if not os.path.exists(filename):
+        print("myguard.json is error!")    
+    with open(filename, "r") as f:
+        load_dict = json.load(f) #多边形的顶点坐标
+    points2 = np.array(load_dict["base1"])    
 
     a1 = [0, 0]
     a2 = point1
@@ -93,16 +93,15 @@ def inner_point(point1, points2):
     else:
         return False
 
-def draw_muti(image, point2):
-    # filename = "./myguard.json"
-    # if not os.path.exists(filename):
-        # print("myguard.json is error!")
+def draw_muti(image):
+    filename = "./myguard.json"
+    if not os.path.exists(filename):
+        print("myguard.json is error!")
         
-    # with open(filename, "r") as f:
-        # load_dict = json.load(f) #多边形的顶点坐标
-    # pts = np.array(load_dict["base1"])
+    with open(filename, "r") as f:
+        load_dict = json.load(f) #多边形的顶点坐标
+    pts = np.array(load_dict["base1"])
     # print(pts)
-    pts = np.array(point2)
     cv2.polylines(image,[pts],True,(0,255,255), 2)  #画任意多边形
 
 #clip face img
