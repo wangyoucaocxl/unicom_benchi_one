@@ -1,10 +1,10 @@
-import os, time
 from PIL import Image, ImageDraw, ImageFont
 from src.detect_benchi import benchi_detect
-import json
 import numpy as np
 import cv2
 from face_dlib.face_detection_new import once_detect
+
+
 
 #向量叉乘
 def determinant(A, B):
@@ -116,12 +116,12 @@ def face_img(img, out_lis):
 
     return face_img
 
-def muti_attr(image):
+def muti_attr(image, mystage):
     out = benchi_detect(image)
     label_dict = {}
     lis = []
-    face_location = []
-    label_dict["face"] = "Unknown"
+    #face_location = []
+    label_dict["face"] = ""
     for i in range(len(out)):
         #根据置信度限定不符合要求的attr。
         #========my_setting==============
@@ -143,23 +143,39 @@ def muti_attr(image):
                     control = False
    
     myset = sorted(set(lis))
-    for key in myset:
-        if key == 1:
-            label_dict["hat"] = 1
-        elif key == 2:
-            label_dict["hat"] = 0
-        elif key == 3:
-            label_dict["coat"] = 1
-        elif key == 4:
-            label_dict["coat"] = 0
-        elif key == 5:
-            label_dict["gloves"] = 1
-        elif key == 6:
-            label_dict["gloves"] = 0
-        elif key == 7:
-            label_dict["shoes"] = 0
-        elif key == 8:
-            label_dict["shoes"] = 0
+    if mystage == 2:
+        for key in myset:
+            if key == 3:
+                label_dict["coat"] = 1
+            elif key == 4:
+                label_dict["coat"] = 0
+            elif key == 7:
+                label_dict["shoes"] = 1  #shoes,去奔驰部署时可更改设置
+            elif key == 8:
+                label_dict["shoes"] = 0  
+            elif key == 9:
+                label_dict["coat"] = 0   #tshirt,去奔驰部署时可更改设置
+                
+    elif mystage == 1:
+        for key in myset:
+            if key == 1:
+                label_dict["hat"] = 1
+            elif key == 2:
+                label_dict["hat"] = 0
+            elif key == 3:
+                label_dict["coat"] = 1
+            elif key == 4:
+                label_dict["coat"] = 0
+            elif key == 5:
+                label_dict["gloves"] = 1
+            elif key == 6:
+                label_dict["gloves"] = 0
+            elif key == 7:
+                label_dict["shoes"] = 1   #shoes,去奔驰部署时可更改设置
+            elif key == 8:
+                label_dict["shoes"] = 0
+            elif key == 9:
+                label_dict["coat"] = 0    #tshirt,去奔驰部署时可更改设置
     
     return label_dict
 
@@ -175,7 +191,7 @@ def add_ch_text(img, text, left, top, textColor=(0, 255, 0), textSize=20):
     # 转换回Opencv格式
     return cv2.cvtColor(np.asarray(img), cv2.COLOR_RGB2BGR)  
 
-def get_labels(img, pbox):
+def get_labels(img, pbox, mystage):
     start_x = int(pbox[0])
     start_y = int(pbox[1])
     end_x = int(pbox[2])
@@ -185,18 +201,18 @@ def get_labels(img, pbox):
     h, w, c = clip_images.shape
     #根据图像大小限定不符合要求的人形框。
     if h > 96 and w > 48:
-        label_dict = muti_attr(clip_images)
+        label_dict = muti_attr(clip_images, mystage)
         return label_dict
     return None
 
 def draw_person_attr(show_image, label_dict, pbox, control_color):
 
-    start_x = int(pbox[0])
+#    start_x = int(pbox[0])
     start_y = int(pbox[1])
     end_x = int(pbox[2])
-    end_y = int(pbox[3])
+#    end_y = int(pbox[3])
     i_count=0
-    font=cv2.FONT_HERSHEY_COMPLEX
+#    font=cv2.FONT_HERSHEY_COMPLEX
     
     if not control_color:
         return show_image
@@ -235,7 +251,7 @@ def draw_person_attr(show_image, label_dict, pbox, control_color):
             a = "姓名"
             b = label_dict[key]
             text= a + ":" + str(b)
-            if label_dict[key] == "Unknown":
+            if label_dict[key] == "":
                 text= a + ":" + str(" ")
                 show_image = add_ch_text(show_image,  text, end_x, start_y+i_count, textColor=(255, 0, 0), textSize=30)
                 #cv2.putText(show_image,text,(end_x,start_y+i_count),font,0.7,(0,255,0),2)

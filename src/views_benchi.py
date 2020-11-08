@@ -3,23 +3,23 @@
 from __future__ import division, print_function, absolute_import
 from flask import Flask, render_template, Blueprint,Response,request
 from src.person_detect_used import preson_detect
-from src.my_functions import *
+from src.mul_stage_benchi import mul_stage_model
+from src.my_functions import inner_point, draw_muti, draw_person_attr, get_labels, add_ch_text
 #from concurrent.futures import ThreadPoolExecutor
 import threading
 import cv2
-import time, os, json, glob
+import time, os, json
 from flask_cors import CORS
 import numpy as np
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image
 from urllib.request import urlretrieve
-import sys
 import warnings
 import requests
 from collections import deque
 
 import vlc
 import ctypes
-import warnings
+
 warnings.filterwarnings("ignore")
 
 #url = "http://fabx.aidong-ai.com/snapshot/worker"
@@ -148,9 +148,9 @@ def put_data(camerId):
         time.sleep(0.5)
         try:
             data = q_put_img.pop()
-            print("=========================put_data", data[2])
+            print("=========================put_data================================")
             if data:
-                img_name, my_result, frame = data[0], data[1], data[2]
+                mystage, img_name, my_result, frame = data[0], data[1], data[2]
                 frame_lt = cv2.resize(frame, (0, 0), fx=0.5, fy=0.5)
                 # control_put = False
                 header = {}
@@ -160,32 +160,50 @@ def put_data(camerId):
                 if "hat" in my_result:
                     lh = 0 if my_result['hat'] == 0 else 1
                 else:
-                    lh = 0
+                    lh = ""
 
                 if "coat" in my_result:
                     lf = 0 if my_result['coat'] == 0 else 1
                 else:
-                    lf = 0
+                    lf = ""
 
                 if "gloves" in my_result:
                     lg = 0 if my_result['gloves'] == 0 else 1
                 else:
-                    lg = 0
+                    lg = ""
 
                 if "shoes" in my_result:
                     ls = 0 if my_result['shoes'] == 0 else 1
                 else:
-                    ls = 0
-
-                para = {"cameraId": camerId,
-                        "workerNumber":"003",
-                        "hat": lh,
-                        "frock": lf,
-                        "glove": lg,
-                        "shoe": ls,
-                        "timestamp": int(round(time.time() * 1000)),
-                        "file_name": img_name}
+                    ls = ""
+                    
+                if "face" in my_result:
+                    fc = my_result['face']
+                else:
+                    fc = ""
+                
+                if mystage==2 :
+                    para = {
+                            "cameraId": camerId,
+                            "workerNumber": fc,
+                            "hat": "",
+                            "frock": lf,
+                            "glove": "",
+                            "shoe": ls,
+                            "timestamp": int(round(time.time() * 1000))
+                            }
+                else:
+                    para = {
+                            "cameraId": camerId,
+                            "workerNumber": fc,
+                            "hat": lh,
+                            "frock": lf,
+                            "glove": lg,
+                            "shoe": ls,
+                            "timestamp": int(round(time.time() * 1000))
+                            }
                 r = requests.post(url, files=files, data=para, headers=header)
+                print(r)
                 print(para)
                 time.sleep(1)
         except KeyboardInterrupt:
@@ -211,7 +229,7 @@ def read_video(dq, rtsp_addr):
     # video_reader.set(cv2.CAP_PROP_FPS, 25)
     video_reader = cv2.VideoCapture(rtsp_addr)
     while True:
-        time.sleep(0.03)
+        time.sleep(0.02)
         ret1, img = video_reader.read()
         # print(img.shape)
         if not ret1 or type(img) == type(None):
@@ -231,6 +249,7 @@ def read_video_vlc(dq, rtsp_addr):
     # url = "rtsp://demo.easydss.com:10554/aidong_demo"
     # url = "rtsp://admin:ad123456@192.168.199.220/Streaming/Channels/1"
     url = rtsp_addr
+    
     m = vlcInstance.media_new(url)
     mp = vlc.libvlc_media_player_new_from_media(m)
      
@@ -299,15 +318,14 @@ def new_loc(lis1, lis2):
     y2 = int((lis1[3]+lis2[3])/2)
     return [x1, y1, x2, y2] 
 
-
-
 def get_detect(rtsp_addr, camerId):
-
     global control_color
-    dq = deque(maxlen=1)
-    t_read_video = threading.Thread(target=read_video, args=(dq, rtsp_addr))
-    # t_read_video = threading.Thread(target=read_video_vlc, args=(dq,))
+    dq = deque(maxlen=5)
+    
+    #t_read_video = threading.Thread(target=read_video, args=(dq, rtsp_addr))
+    t_read_video = threading.Thread(target=read_video_vlc, args=(dq, rtsp_addr))
     t_put_data = threading.Thread(target=put_data, args=(camerId,))
+
     t_read_video.start() 
     t_put_data.start() 
     
@@ -319,7 +337,9 @@ def get_detect(rtsp_addr, camerId):
     num = 0    #有数据循环次数
     t1 = time.time()  #重新检测时间初始值
     my_result = {} #存储缓冲数据
-
+    
+    
+    mystage = 1 #默认都检测
     fbox = []
     bbox = []
     person_dit = {}
@@ -327,16 +347,16 @@ def get_detect(rtsp_addr, camerId):
     #加载电子围栏
     try:
         points2 = get_fence(camerId)
-        print("-------"*100, points2)
+        #print("-------"*100, points2)
         points2 = [[int(float(pt[0])*1280), int(float(pt[1])*720)]for pt in points2]
-        print("-------"*100, points2)
+        #print("-------"*100, points2)
     except:
         points2 = [[0,0], [0,10],[10,10],[10,0]]
         print("no gardline!please create new line.")
 
     while True:
         
-        #avoid the memory error.
+        # avoid the memory error.
         if len(my_track_dict)>50:
             my_track_dict = {}  #save the info of track_id
         if len(my_result) > 50:
@@ -348,22 +368,48 @@ def get_detect(rtsp_addr, camerId):
             img = dq.popleft()
             print("=====================", img.shape)
         else:
-            time.sleep(0.05)
+            #print("------------------------------>dq------------------->is nan..............")
+            time.sleep(0.02)
             continue
- 
+               
         start_time = time.time()  #开始计时,测试单贞照片处理时间
         num += 1 
 
         if num % 1000 == 1:
             pass
             #cv2.imwrite(save_file+"/_{}.jpg".format(num), img)
-
+            
         img_h, img_w, img_ch = img.shape
         print(img.shape)
 
         #2、防止裁剪或推理时把画的框裁剪上
         show_image = img.copy()
         frame = img.copy()
+
+        #增加拆解阶段的判断
+        if num % 10 == 1:
+            stage_result = mul_stage_model(img)
+            #print(stage_result)
+            for i in range(len(stage_result)):
+                if stage_result[i, 2] > 0.95:
+                    mystage = int(stage_result[i,1])
+                    #mytest = stage_result[i]
+                    print(stage_result[i,1], "----------mystage-------->"*2, stage_result[i, 2])
+                    break
+            else:
+                mystage = 1
+
+        #if mystage == 2:
+            #cv2.rectangle(show_image, (int(mytest[3]*1280), int(mytest[4]*720)), (int(mytest[3]*1280+mytest[5]*1280), int(mytest[4]*720+mytest[6]*720)), (0, 149, 230), 1)
+          
+        #mystage = 1
+        cv2.rectangle(show_image, (400, 10), (880, 100), (120, 149, 230), -1)
+        if mystage == 2:
+            show_image = add_ch_text(show_image, "第一拆解阶段:", 410, 15, textColor=(255, 255, 255), textSize=30)
+            show_image = add_ch_text(show_image, "仅检测衣服和鞋子。", 410, 60, textColor=(255, 255, 255), textSize=30)   
+        elif mystage == 1:
+            show_image = add_ch_text(show_image, "第二拆解阶段:", 410, 15, textColor=(255, 255, 255), textSize=30)
+            show_image = add_ch_text(show_image, "帽子、衣服、手套、鞋子全部检测。", 410, 60, textColor=(255, 255, 255), textSize=30)
 
         #the predict of person.
         boxes = []
@@ -384,12 +430,13 @@ def get_detect(rtsp_addr, camerId):
                 #detect the person in setting area.
                 point1 = [int((left+right)/2), bottom]
                 my_index = inner_point(point1, points2)
-                my_index = True
+                # my_index = True
                 print("my_index", my_index)
                 if my_index:
                     boxes.append([left, top, right, bottom]) 
                     
         if boxes:
+        #if False:
             #跟踪算法
             if not fbox:
                 fbox = boxes
@@ -440,8 +487,8 @@ def get_detect(rtsp_addr, camerId):
                 # if my_key not in my_track_dict.keys() or detect_time>control_time:
                 if True:
                     #the code of processing the person box.
-                    label_dict = get_labels(frame, person_dit[my_key])   #pbox为人单个人形框
-                    # print("============================================", label_dict)
+                    label_dict = get_labels(frame, person_dit[my_key], mystage)   #pbox为人单个人形框
+                    print("============================================", label_dict)
                     
                     #label_dict 可能为None
                     if type(label_dict) == type(None):
@@ -458,7 +505,7 @@ def get_detect(rtsp_addr, camerId):
                 p2 = (new_box[2], new_box[3])
                 cv2.rectangle(show_image, p1, p2, (255,0,0), 2, 1)
                 #添加文字显示
-                cv2.putText(show_image, "person:"+my_key, (new_box[0], new_box[1]), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (50,170,50),2)
+                cv2.putText(show_image, "person:"+my_key, (new_box[0], new_box[1]-20), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (50,170,50),2)
 
                 show_image = draw_person_attr(show_image, my_track_dict[my_key], new_box, control_color)   # draw the attr of person.
 
@@ -473,7 +520,7 @@ def get_detect(rtsp_addr, camerId):
                     for key1 in  my_track_dict[my_key]:
                         if key1 in my_result[my_key]:
                             if key1 == "face":
-                                if my_track_dict[my_key]["face"] != "Unknown":
+                                if my_track_dict[my_key]["face"] != "":
                                     my_result[my_key]["face"] = my_track_dict[my_key]["face"]
                             else:
                                 my_result[my_key][key1] = my_result[my_key][key1] + my_track_dict[my_key][key1]
@@ -500,12 +547,12 @@ def get_detect(rtsp_addr, camerId):
                     
 
                     #if "coat" in my_cum_result and "hat" in my_cum_result and "gloves" in my_cum_result and "shoes" in my_cum_result:
-                    if "coat" in my_cum_result and "hat" in my_cum_result and "shoes" in my_cum_result:
+                    if "coat" in my_cum_result and "shoes" in my_cum_result:
                         pic_name = str(camerId) +  "_" + str(int(time.time())) + "_" + my_key
                         # put_data(my_key, my_result, frame)
                         print("--------put_data-------->")
                         loction = person_dit[my_key]
-                        q_put_img.append([pic_name, my_cum_result, show_image[loction[1]:loction[3], loction[0]:loction[2]]])
+                        q_put_img.append([mystage, pic_name, my_cum_result, frame[loction[1]:loction[3], loction[0]:loction[2]]])
                         # my_result[my_key] = {"hat":0, "coat":0, "gloves":0,"shoes":0, "mysum":0}
         
             #draw the gurdline.画警戒线
@@ -539,7 +586,6 @@ def get_detect(rtsp_addr, camerId):
             ret2, jpeg = cv2.imencode('.jpg', show_image)
             yield (b'--frame\r\n'
                    b'application/octet-stream: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n\r\n')         
-
 
              
 

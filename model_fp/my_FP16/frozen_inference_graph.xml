@@ -1705,7 +1705,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="79" name="3012/Output_0/Data__const" precision="I32" type="Const">
+		<layer id="79" name="3060/Output_0/Data__const" precision="I32" type="Const">
 			<output>
 				<port id="1">
 					<dim>3</dim>
@@ -2255,7 +2255,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="105" name="3016/Output_0/Data__const" precision="I32" type="Const">
+		<layer id="105" name="3064/Output_0/Data__const" precision="I32" type="Const">
 			<output>
 				<port id="1">
 					<dim>3</dim>
@@ -2411,7 +2411,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="113" name="3020/Output_0/Data__const" precision="I32" type="Const">
+		<layer id="113" name="3068/Output_0/Data__const" precision="I32" type="Const">
 			<output>
 				<port id="1">
 					<dim>3</dim>
@@ -2567,7 +2567,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="121" name="3024/Output_0/Data__const" precision="I32" type="Const">
+		<layer id="121" name="3072/Output_0/Data__const" precision="I32" type="Const">
 			<output>
 				<port id="1">
 					<dim>3</dim>
@@ -2723,7 +2723,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="129" name="3028/Output_0/Data__const" precision="I32" type="Const">
+		<layer id="129" name="3076/Output_0/Data__const" precision="I32" type="Const">
 			<output>
 				<port id="1">
 					<dim>3</dim>
@@ -2879,7 +2879,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="137" name="3032/Output_0/Data__const" precision="I32" type="Const">
+		<layer id="137" name="3080/Output_0/Data__const" precision="I32" type="Const">
 			<output>
 				<port id="1">
 					<dim>3</dim>
@@ -2980,7 +2980,7 @@
 			</output>
 		</layer>
 		<layer id="142" name="BoxPredictor_0/ClassPredictor/Conv2D" precision="FP16" type="Convolution">
-			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="27" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="30" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -2992,14 +2992,14 @@
 			<output>
 				<port id="3">
 					<dim>1</dim>
-					<dim>27</dim>
+					<dim>30</dim>
 					<dim>19</dim>
 					<dim>19</dim>
 				</port>
 			</output>
 			<blobs>
-				<weights offset="9119068" size="31104"/>
-				<biases offset="9150172" size="54"/>
+				<weights offset="9119068" size="34560"/>
+				<biases offset="9153628" size="60"/>
 			</blobs>
 		</layer>
 		<layer id="143" name="BoxPredictor_0/ClassPredictor/Conv2D/Transpose" precision="FP16" type="Permute">
@@ -3007,7 +3007,7 @@
 			<input>
 				<port id="0">
 					<dim>1</dim>
-					<dim>27</dim>
+					<dim>30</dim>
 					<dim>19</dim>
 					<dim>19</dim>
 				</port>
@@ -3017,18 +3017,18 @@
 					<dim>1</dim>
 					<dim>19</dim>
 					<dim>19</dim>
-					<dim>27</dim>
+					<dim>30</dim>
 				</port>
 			</output>
 		</layer>
-		<layer id="144" name="3014/Output_0/Data__const" precision="I32" type="Const">
+		<layer id="144" name="3062/Output_0/Data__const" precision="I32" type="Const">
 			<output>
 				<port id="1">
 					<dim>3</dim>
 				</port>
 			</output>
 			<blobs>
-				<custom offset="9150226" size="12"/>
+				<custom offset="9153688" size="12"/>
 			</blobs>
 		</layer>
 		<layer id="145" name="BoxPredictor_0/ClassPredictor/BiasAdd/Reshape" precision="FP16" type="Reshape">
@@ -3037,7 +3037,7 @@
 					<dim>1</dim>
 					<dim>19</dim>
 					<dim>19</dim>
-					<dim>27</dim>
+					<dim>30</dim>
 				</port>
 				<port id="1">
 					<dim>3</dim>
@@ -3047,12 +3047,12 @@
 				<port id="2">
 					<dim>1</dim>
 					<dim>1083</dim>
-					<dim>9</dim>
+					<dim>10</dim>
 				</port>
 			</output>
 		</layer>
 		<layer id="146" name="BoxPredictor_1/ClassPredictor/Conv2D" precision="FP16" type="Convolution">
-			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="54" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="60" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -3064,14 +3064,14 @@
 			<output>
 				<port id="3">
 					<dim>1</dim>
-					<dim>54</dim>
+					<dim>60</dim>
 					<dim>10</dim>
 					<dim>10</dim>
 				</port>
 			</output>
 			<blobs>
-				<weights offset="9150238" size="138240"/>
-				<biases offset="9288478" size="108"/>
+				<weights offset="9153700" size="153600"/>
+				<biases offset="9307300" size="120"/>
 			</blobs>
 		</layer>
 		<layer id="147" name="BoxPredictor_1/ClassPredictor/Conv2D/Transpose" precision="FP16" type="Permute">
@@ -3079,7 +3079,7 @@
 			<input>
 				<port id="0">
 					<dim>1</dim>
-					<dim>54</dim>
+					<dim>60</dim>
 					<dim>10</dim>
 					<dim>10</dim>
 				</port>
@@ -3089,18 +3089,18 @@
 					<dim>1</dim>
 					<dim>10</dim>
 					<dim>10</dim>
-					<dim>54</dim>
+					<dim>60</dim>
 				</port>
 			</output>
 		</layer>
-		<layer id="148" name="3018/Output_0/Data__const" precision="I32" type="Const">
+		<layer id="148" name="3066/Output_0/Data__const" precision="I32" type="Const">
 			<output>
 				<port id="1">
 					<dim>3</dim>
 				</port>
 			</output>
 			<blobs>
-				<custom offset="9150226" size="12"/>
+				<custom offset="9153688" size="12"/>
 			</blobs>
 		</layer>
 		<layer id="149" name="BoxPredictor_1/ClassPredictor/BiasAdd/Reshape" precision="FP16" type="Reshape">
@@ -3109,7 +3109,7 @@
 					<dim>1</dim>
 					<dim>10</dim>
 					<dim>10</dim>
-					<dim>54</dim>
+					<dim>60</dim>
 				</port>
 				<port id="1">
 					<dim>3</dim>
@@ -3119,12 +3119,12 @@
 				<port id="2">
 					<dim>1</dim>
 					<dim>600</dim>
-					<dim>9</dim>
+					<dim>10</dim>
 				</port>
 			</output>
 		</layer>
 		<layer id="150" name="BoxPredictor_2/ClassPredictor/Conv2D" precision="FP16" type="Convolution">
-			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="54" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="60" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -3136,14 +3136,14 @@
 			<output>
 				<port id="3">
 					<dim>1</dim>
-					<dim>54</dim>
+					<dim>60</dim>
 					<dim>5</dim>
 					<dim>5</dim>
 				</port>
 			</output>
 			<blobs>
-				<weights offset="9288586" size="55296"/>
-				<biases offset="9343882" size="108"/>
+				<weights offset="9307420" size="61440"/>
+				<biases offset="9368860" size="120"/>
 			</blobs>
 		</layer>
 		<layer id="151" name="BoxPredictor_2/ClassPredictor/Conv2D/Transpose" precision="FP16" type="Permute">
@@ -3151,7 +3151,7 @@
 			<input>
 				<port id="0">
 					<dim>1</dim>
-					<dim>54</dim>
+					<dim>60</dim>
 					<dim>5</dim>
 					<dim>5</dim>
 				</port>
@@ -3161,18 +3161,18 @@
 					<dim>1</dim>
 					<dim>5</dim>
 					<dim>5</dim>
-					<dim>54</dim>
+					<dim>60</dim>
 				</port>
 			</output>
 		</layer>
-		<layer id="152" name="3022/Output_0/Data__const" precision="I32" type="Const">
+		<layer id="152" name="3070/Output_0/Data__const" precision="I32" type="Const">
 			<output>
 				<port id="1">
 					<dim>3</dim>
 				</port>
 			</output>
 			<blobs>
-				<custom offset="9150226" size="12"/>
+				<custom offset="9153688" size="12"/>
 			</blobs>
 		</layer>
 		<layer id="153" name="BoxPredictor_2/ClassPredictor/BiasAdd/Reshape" precision="FP16" type="Reshape">
@@ -3181,7 +3181,7 @@
 					<dim>1</dim>
 					<dim>5</dim>
 					<dim>5</dim>
-					<dim>54</dim>
+					<dim>60</dim>
 				</port>
 				<port id="1">
 					<dim>3</dim>
@@ -3191,12 +3191,12 @@
 				<port id="2">
 					<dim>1</dim>
 					<dim>150</dim>
-					<dim>9</dim>
+					<dim>10</dim>
 				</port>
 			</output>
 		</layer>
 		<layer id="154" name="BoxPredictor_3/ClassPredictor/Conv2D" precision="FP16" type="Convolution">
-			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="54" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="60" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -3208,14 +3208,14 @@
 			<output>
 				<port id="3">
 					<dim>1</dim>
-					<dim>54</dim>
+					<dim>60</dim>
 					<dim>3</dim>
 					<dim>3</dim>
 				</port>
 			</output>
 			<blobs>
-				<weights offset="9343990" size="27648"/>
-				<biases offset="9371638" size="108"/>
+				<weights offset="9368980" size="30720"/>
+				<biases offset="9399700" size="120"/>
 			</blobs>
 		</layer>
 		<layer id="155" name="BoxPredictor_3/ClassPredictor/Conv2D/Transpose" precision="FP16" type="Permute">
@@ -3223,7 +3223,7 @@
 			<input>
 				<port id="0">
 					<dim>1</dim>
-					<dim>54</dim>
+					<dim>60</dim>
 					<dim>3</dim>
 					<dim>3</dim>
 				</port>
@@ -3233,18 +3233,18 @@
 					<dim>1</dim>
 					<dim>3</dim>
 					<dim>3</dim>
-					<dim>54</dim>
+					<dim>60</dim>
 				</port>
 			</output>
 		</layer>
-		<layer id="156" name="3026/Output_0/Data__const" precision="I32" type="Const">
+		<layer id="156" name="3074/Output_0/Data__const" precision="I32" type="Const">
 			<output>
 				<port id="1">
 					<dim>3</dim>
 				</port>
 			</output>
 			<blobs>
-				<custom offset="9150226" size="12"/>
+				<custom offset="9153688" size="12"/>
 			</blobs>
 		</layer>
 		<layer id="157" name="BoxPredictor_3/ClassPredictor/BiasAdd/Reshape" precision="FP16" type="Reshape">
@@ -3253,7 +3253,7 @@
 					<dim>1</dim>
 					<dim>3</dim>
 					<dim>3</dim>
-					<dim>54</dim>
+					<dim>60</dim>
 				</port>
 				<port id="1">
 					<dim>3</dim>
@@ -3263,12 +3263,12 @@
 				<port id="2">
 					<dim>1</dim>
 					<dim>54</dim>
-					<dim>9</dim>
+					<dim>10</dim>
 				</port>
 			</output>
 		</layer>
 		<layer id="158" name="BoxPredictor_4/ClassPredictor/Conv2D" precision="FP16" type="Convolution">
-			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="54" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="60" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -3280,14 +3280,14 @@
 			<output>
 				<port id="3">
 					<dim>1</dim>
-					<dim>54</dim>
+					<dim>60</dim>
 					<dim>2</dim>
 					<dim>2</dim>
 				</port>
 			</output>
 			<blobs>
-				<weights offset="9371746" size="27648"/>
-				<biases offset="9399394" size="108"/>
+				<weights offset="9399820" size="30720"/>
+				<biases offset="9430540" size="120"/>
 			</blobs>
 		</layer>
 		<layer id="159" name="BoxPredictor_4/ClassPredictor/Conv2D/Transpose" precision="FP16" type="Permute">
@@ -3295,7 +3295,7 @@
 			<input>
 				<port id="0">
 					<dim>1</dim>
-					<dim>54</dim>
+					<dim>60</dim>
 					<dim>2</dim>
 					<dim>2</dim>
 				</port>
@@ -3305,18 +3305,18 @@
 					<dim>1</dim>
 					<dim>2</dim>
 					<dim>2</dim>
-					<dim>54</dim>
+					<dim>60</dim>
 				</port>
 			</output>
 		</layer>
-		<layer id="160" name="3030/Output_0/Data__const" precision="I32" type="Const">
+		<layer id="160" name="3078/Output_0/Data__const" precision="I32" type="Const">
 			<output>
 				<port id="1">
 					<dim>3</dim>
 				</port>
 			</output>
 			<blobs>
-				<custom offset="9150226" size="12"/>
+				<custom offset="9153688" size="12"/>
 			</blobs>
 		</layer>
 		<layer id="161" name="BoxPredictor_4/ClassPredictor/BiasAdd/Reshape" precision="FP16" type="Reshape">
@@ -3325,7 +3325,7 @@
 					<dim>1</dim>
 					<dim>2</dim>
 					<dim>2</dim>
-					<dim>54</dim>
+					<dim>60</dim>
 				</port>
 				<port id="1">
 					<dim>3</dim>
@@ -3335,12 +3335,12 @@
 				<port id="2">
 					<dim>1</dim>
 					<dim>24</dim>
-					<dim>9</dim>
+					<dim>10</dim>
 				</port>
 			</output>
 		</layer>
 		<layer id="162" name="BoxPredictor_5/ClassPredictor/Conv2D" precision="FP16" type="Convolution">
-			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="54" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+			<data auto_pad="same_upper" dilations="1,1" group="1" kernel="1,1" output="60" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -3352,14 +3352,14 @@
 			<output>
 				<port id="3">
 					<dim>1</dim>
-					<dim>54</dim>
+					<dim>60</dim>
 					<dim>1</dim>
 					<dim>1</dim>
 				</port>
 			</output>
 			<blobs>
-				<weights offset="9399502" size="13824"/>
-				<biases offset="9413326" size="108"/>
+				<weights offset="9430660" size="15360"/>
+				<biases offset="9446020" size="120"/>
 			</blobs>
 		</layer>
 		<layer id="163" name="BoxPredictor_5/ClassPredictor/Conv2D/Transpose" precision="FP16" type="Permute">
@@ -3367,7 +3367,7 @@
 			<input>
 				<port id="0">
 					<dim>1</dim>
-					<dim>54</dim>
+					<dim>60</dim>
 					<dim>1</dim>
 					<dim>1</dim>
 				</port>
@@ -3377,18 +3377,18 @@
 					<dim>1</dim>
 					<dim>1</dim>
 					<dim>1</dim>
-					<dim>54</dim>
+					<dim>60</dim>
 				</port>
 			</output>
 		</layer>
-		<layer id="164" name="3034/Output_0/Data__const" precision="I32" type="Const">
+		<layer id="164" name="3082/Output_0/Data__const" precision="I32" type="Const">
 			<output>
 				<port id="1">
 					<dim>3</dim>
 				</port>
 			</output>
 			<blobs>
-				<custom offset="9150226" size="12"/>
+				<custom offset="9153688" size="12"/>
 			</blobs>
 		</layer>
 		<layer id="165" name="BoxPredictor_5/ClassPredictor/BiasAdd/Reshape" precision="FP16" type="Reshape">
@@ -3397,7 +3397,7 @@
 					<dim>1</dim>
 					<dim>1</dim>
 					<dim>1</dim>
-					<dim>54</dim>
+					<dim>60</dim>
 				</port>
 				<port id="1">
 					<dim>3</dim>
@@ -3407,7 +3407,7 @@
 				<port id="2">
 					<dim>1</dim>
 					<dim>6</dim>
-					<dim>9</dim>
+					<dim>10</dim>
 				</port>
 			</output>
 		</layer>
@@ -3417,39 +3417,39 @@
 				<port id="0">
 					<dim>1</dim>
 					<dim>1083</dim>
-					<dim>9</dim>
+					<dim>10</dim>
 				</port>
 				<port id="1">
 					<dim>1</dim>
 					<dim>600</dim>
-					<dim>9</dim>
+					<dim>10</dim>
 				</port>
 				<port id="2">
 					<dim>1</dim>
 					<dim>150</dim>
-					<dim>9</dim>
+					<dim>10</dim>
 				</port>
 				<port id="3">
 					<dim>1</dim>
 					<dim>54</dim>
-					<dim>9</dim>
+					<dim>10</dim>
 				</port>
 				<port id="4">
 					<dim>1</dim>
 					<dim>24</dim>
-					<dim>9</dim>
+					<dim>10</dim>
 				</port>
 				<port id="5">
 					<dim>1</dim>
 					<dim>6</dim>
-					<dim>9</dim>
+					<dim>10</dim>
 				</port>
 			</input>
 			<output>
 				<port id="6">
 					<dim>1</dim>
 					<dim>1917</dim>
-					<dim>9</dim>
+					<dim>10</dim>
 				</port>
 			</output>
 		</layer>
@@ -3460,7 +3460,7 @@
 				</port>
 			</output>
 			<blobs>
-				<custom offset="9413434" size="16"/>
+				<custom offset="9446140" size="16"/>
 			</blobs>
 		</layer>
 		<layer id="168" name="do_ExpandDims_conf" precision="FP16" type="Reshape">
@@ -3468,7 +3468,7 @@
 				<port id="0">
 					<dim>1</dim>
 					<dim>1917</dim>
-					<dim>9</dim>
+					<dim>10</dim>
 				</port>
 				<port id="1">
 					<dim>4</dim>
@@ -3479,7 +3479,7 @@
 					<dim>1</dim>
 					<dim>1</dim>
 					<dim>1917</dim>
-					<dim>9</dim>
+					<dim>10</dim>
 				</port>
 			</output>
 		</layer>
@@ -3490,7 +3490,7 @@
 					<dim>1</dim>
 					<dim>1</dim>
 					<dim>1917</dim>
-					<dim>9</dim>
+					<dim>10</dim>
 				</port>
 			</input>
 			<output>
@@ -3498,7 +3498,7 @@
 					<dim>1</dim>
 					<dim>1</dim>
 					<dim>1917</dim>
-					<dim>9</dim>
+					<dim>10</dim>
 				</port>
 			</output>
 		</layer>
@@ -3518,7 +3518,7 @@
 					<dim>1</dim>
 					<dim>1</dim>
 					<dim>1917</dim>
-					<dim>9</dim>
+					<dim>10</dim>
 				</port>
 				<port id="1">
 					<dim>2</dim>
@@ -3527,7 +3527,7 @@
 			<output>
 				<port id="2">
 					<dim>1</dim>
-					<dim>17253</dim>
+					<dim>19170</dim>
 				</port>
 			</output>
 		</layer>
@@ -3556,7 +3556,7 @@
 			</output>
 		</layer>
 		<layer id="173" name="PriorBoxClustered_1" precision="FP16" type="PriorBoxClustered">
-			<data clip="0" flip="0" height="104.99999940000001,74.24621160032342,148.49242320064684,60.62177791850055,181.8744304326306,125.49900311954674" offset="0.5" variance="0.1,0.1,0.2,0.2" width="104.99999940000001,148.49242320064687,74.24621160032343,181.86533375550164,60.618745844451475,125.49900311954674"/>
+			<data clip="0" flip="0" height="105.0,74.24621202458748,148.49242404917496,60.62177826491071,181.87442874352365,125.49900398011134" offset="0.5" variance="0.1,0.1,0.2,0.2" width="105.0,148.49242404917499,74.24621202458749,181.8653347947321,60.618747100216446,125.49900398011134"/>
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -3580,7 +3580,7 @@
 			</output>
 		</layer>
 		<layer id="174" name="PriorBoxClustered_2" precision="FP16" type="PriorBoxClustered">
-			<data clip="0" flip="0" height="149.99999880000001,106.06601632945399,212.13203265890797,86.60253968562355,259.8206143098823,171.02631229141326" offset="0.5" variance="0.1,0.1,0.2,0.2" width="149.99999880000001,212.132032658908,106.066016329454,259.80761905687064,86.59820815127762,171.02631229141326"/>
+			<data clip="0" flip="0" height="150.0,106.06601717798212,212.13203435596424,86.60254037844388,259.8206124907481,171.0263137648707" offset="0.5" variance="0.1,0.1,0.2,0.2" width="150.0,212.13203435596427,106.06601717798213,259.8076211353316,86.59821014316636,171.0263137648707"/>
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -3604,7 +3604,7 @@
 			</output>
 		</layer>
 		<layer id="175" name="PriorBoxClustered_3" precision="FP16" type="PriorBoxClustered">
-			<data clip="0" flip="0" height="194.99999820000002,137.88582105858458,275.77164211716916,112.58330145274655,337.766798187134,216.33307444771364" offset="0.5" variance="0.1,0.1,0.2,0.2" width="194.99999820000002,275.77164211716916,137.88582105858458,337.74990435823963,112.57767045810377,216.33307444771364"/>
+			<data clip="0" flip="0" height="195.0,137.88582233137677,275.77164466275354,112.58330249197702,337.7667962379726,216.33307652783938" offset="0.5" variance="0.1,0.1,0.2,0.2" width="195.0,275.77164466275354,137.88582233137677,337.749907475931,112.57767318611627,216.33307652783938"/>
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -3628,7 +3628,7 @@
 			</output>
 		</layer>
 		<layer id="176" name="PriorBoxClustered_4" precision="FP16" type="PriorBoxClustered">
-			<data clip="0" flip="0" height="239.99999760000003,169.70562578771515,339.4112515754303,138.56406321986955,415.7129820643857,261.5339339282763" offset="0.5" variance="0.1,0.1,0.2,0.2" width="239.99999760000003,339.4112515754303,169.70562578771515,415.69218965960863,138.55713276492992,261.5339339282763"/>
+			<data clip="0" flip="0" height="240.0,169.7056274847714,339.4112549695428,138.5640646055102,415.71297998519697,261.5339366124404" offset="0.5" variance="0.1,0.1,0.2,0.2" width="240.0,339.4112549695429,169.70562748477144,415.69219381653056,138.55713622906617,261.5339366124404"/>
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -3652,7 +3652,7 @@
 			</output>
 		</layer>
 		<layer id="177" name="PriorBoxClustered_5" precision="FP16" type="PriorBoxClustered">
-			<data clip="0" flip="0" height="284.999997,201.5254305168457,403.0508610336914,164.54482498699255,493.6591659416373,292.4038288053014" offset="0.5" variance="0.1,0.1,0.2,0.2" width="284.999997,403.05086103369143,201.52543051684572,493.63447496097757,164.53659507175607,292.4038288053014"/>
+			<data clip="0" flip="0" height="285.0,201.52543263816602,403.05086527633205,164.54482671904336,493.6591637324214,292.4038303442689" offset="0.5" variance="0.1,0.1,0.2,0.2" width="285.0,403.0508652763321,201.52543263816605,493.63448015713,164.53659927201608,292.4038303442689"/>
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -3718,7 +3718,7 @@
 			</output>
 		</layer>
 		<layer id="179" name="DetectionOutput" precision="FP16" type="DetectionOutput">
-			<data code_type="caffe.PriorBoxParameter.CENTER_SIZE" confidence_threshold="9.9999999e-09" input_height="1" input_width="1" keep_top_k="100" nms_threshold="0.60000002" normalized="1" num_classes="9" pad_mode="caffe.ResizeParameter.CONSTANT" resize_mode="caffe.ResizeParameter.WARP" share_location="1" top_k="100" variance_encoded_in_target="0"/>
+			<data code_type="caffe.PriorBoxParameter.CENTER_SIZE" confidence_threshold="1e-08" input_height="1" input_width="1" keep_top_k="100" nms_threshold="0.6" normalized="1" num_classes="10" pad_mode="caffe.ResizeParameter.CONSTANT" resize_mode="caffe.ResizeParameter.WARP" share_location="1" top_k="100" variance_encoded_in_target="0"/>
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -3726,7 +3726,7 @@
 				</port>
 				<port id="1">
 					<dim>1</dim>
-					<dim>17253</dim>
+					<dim>19170</dim>
 				</port>
 				<port id="2">
 					<dim>1</dim>
