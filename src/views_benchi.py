@@ -150,7 +150,7 @@ def put_data(camerId):
             data = q_put_img.pop()
             print("=========================put_data================================")
             if data:
-                mystage, img_name, my_result, frame = data[0], data[1], data[2]
+                mystage, img_name, my_result, frame = data[0], data[1], data[2], data[3]
                 frame_lt = cv2.resize(frame, (0, 0), fx=0.5, fy=0.5)
                 # control_put = False
                 header = {}
@@ -322,8 +322,8 @@ def get_detect(rtsp_addr, camerId):
     global control_color
     dq = deque(maxlen=5)
     
-    #t_read_video = threading.Thread(target=read_video, args=(dq, rtsp_addr))
-    t_read_video = threading.Thread(target=read_video_vlc, args=(dq, rtsp_addr))
+    t_read_video = threading.Thread(target=read_video, args=(dq, rtsp_addr))
+    #t_read_video = threading.Thread(target=read_video_vlc, args=(dq, rtsp_addr))
     t_put_data = threading.Thread(target=put_data, args=(camerId,))
 
     t_read_video.start() 
@@ -368,7 +368,7 @@ def get_detect(rtsp_addr, camerId):
             img = dq.popleft()
             print("=====================", img.shape)
         else:
-            #print("------------------------------>dq------------------->is nan..............")
+            print("------------------------------>dq------------------->is nan..............")
             time.sleep(0.02)
             continue
                
@@ -546,11 +546,12 @@ def get_detect(rtsp_addr, camerId):
                     del my_result[my_key]    #减少内存负担，上传的人员要删除
                     
 
-                    #if "coat" in my_cum_result and "hat" in my_cum_result and "gloves" in my_cum_result and "shoes" in my_cum_result:
+                    #if "coat" in my_cum_result and "hat" in my_cum_result and "gloves" in my_cum_result and "shoes" in my_cum_resulti:
+                    print(my_cum_result)
                     if "coat" in my_cum_result and "shoes" in my_cum_result:
                         pic_name = str(camerId) +  "_" + str(int(time.time())) + "_" + my_key
                         # put_data(my_key, my_result, frame)
-                        print("--------put_data-------->")
+                        print("--------put_data-------->"*2)
                         loction = person_dit[my_key]
                         q_put_img.append([mystage, pic_name, my_cum_result, frame[loction[1]:loction[3], loction[0]:loction[2]]])
                         # my_result[my_key] = {"hat":0, "coat":0, "gloves":0,"shoes":0, "mysum":0}
@@ -560,8 +561,7 @@ def get_detect(rtsp_addr, camerId):
             end_time = time.time()  #结束计时,测试单贞照片处理时间
             my_one_time = (end_time - start_time) * 1000
             print("====={}=====".format(num), my_one_time)  
-            
-            #print("-------------->", num, my_result)
+            print("-------------->", num, my_result)
             #cv2.namedWindow("aidong_unicom", 0)
             #cv2.imshow('aidong_unicom', show_image)
             #key = cv2.waitKey(1)
@@ -575,8 +575,7 @@ def get_detect(rtsp_addr, camerId):
             draw_muti(show_image, points2)
             end_time = time.time()  #结束计时,测试单贞照片处理时间
             my_one_time = (end_time - start_time) * 1000
-            print("====={}=====".format(num), my_one_time)  
-            
+            print("=====a{}=====".format(num), my_one_time)  
             print("-------------->", num, person_dit)
             #cv2.namedWindow("aidong_unicom", 0)
             #cv2.imshow('aidong_unicom', show_image)
@@ -584,8 +583,12 @@ def get_detect(rtsp_addr, camerId):
 
             show_image = cv2.resize(show_image, (640, 360))
             ret2, jpeg = cv2.imencode('.jpg', show_image)
+            jpg_data = jpeg.tobytes()
             yield (b'--frame\r\n'
-                   b'application/octet-stream: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n\r\n')         
+                   b'application/octet-stream: image/jpeg\r\n\r\n' + jpg_data + b'\r\n\r\n')
+            #end_time = time.time()  #结束计时,测试单贞照片处理时间
+            #my_one_time = (end_time - start_time) * 1000
+            #print("=====b{}=====".format(num), my_one_time)
 
              
 
