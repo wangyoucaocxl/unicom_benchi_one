@@ -36,13 +36,17 @@ cors.init_app(app)
 main = Blueprint('main', __name__)
 app.register_blueprint(main,url_prefix = "")
 
-camer_list = ["rtsp://demo.easydss.com:10054/xDClMP5Mg",
+camer_list = ["rtsp://demo.easydss.com:10054/Seven",
+              "rtsp://demo.easydss.com:10054/xDClMP5Mg",
               "rtsp://demo.easydss.com:10054/shilei_kernel_test",
               "rtsp://demo.easydss.com:10554/aidong_demo",
               "rtsp://admin:ad123456@192.168.199.220/Streaming/Channels/1"
               ]
+camer_list = ["rtsp://demo.easydss.com:10054/xDClMP5Mg"]
+#camer_list = ["rtsp://demo.easydss.com:10054/7o_G1uhMR"]
 camer_count = 1
 q_put_img = deque(maxlen=1)
+check_list = deque(maxlen=5)
 control_color = True
 
 @app.route('/')
@@ -143,7 +147,7 @@ def get_fence(camera_id):
     print("---------pts----------:", pts)
     return pts
 
-def put_data(camerId):
+def put_data(camerId, check_list):
     while True:
         time.sleep(0.5)
         try:
@@ -189,8 +193,7 @@ def put_data(camerId):
                             "hat": "",
                             "frock": lf,
                             "glove": "",
-                            "shoe": ls,
-                            "timestamp": int(round(time.time() * 1000))
+                            "shoe": ls
                             }
                 else:
                     para = {
@@ -199,10 +202,17 @@ def put_data(camerId):
                             "hat": lh,
                             "frock": lf,
                             "glove": lg,
-                            "shoe": ls,
-                            "timestamp": int(round(time.time() * 1000))
+                            "shoe": ls
                             }
-                r = requests.post(url, files=files, data=para, headers=header)
+                
+                check_para = para.copy()
+                if check_para in check_list:
+                    #check_list.append(check_para)
+                    continue
+                else:
+                    check_list.append(check_para)
+                    para["timestamp"] = int(round(time.time() * 1000))
+                    r = requests.post(url, files=files, data=para, headers=header) 
                 print(r)
                 print(para)
                 time.sleep(1)
@@ -229,7 +239,7 @@ def read_video(dq, rtsp_addr):
     # video_reader.set(cv2.CAP_PROP_FPS, 25)
     video_reader = cv2.VideoCapture(rtsp_addr)
     while True:
-        time.sleep(0.02)
+        time.sleep(0.03)
         ret1, img = video_reader.read()
         # print(img.shape)
         if not ret1 or type(img) == type(None):
@@ -305,7 +315,8 @@ def edn_distance(lis1, lis2):
     #print("========", lis1, lis2)
     x1, y1 = (lis1[0]+lis1[2])/2, (lis1[1]+lis1[3])/2
     x2, y2 = (lis2[0]+lis2[2])/2, (lis2[1]+lis2[3])/2
-    if -20<x1-x2<20 and -20<y1-y2<20:
+    d = 50
+    if -d<x1-x2<d and -d<y1-y2<d:
         return True
     else:
         return False
@@ -324,7 +335,7 @@ def get_detect(rtsp_addr, camerId):
     
     t_read_video = threading.Thread(target=read_video, args=(dq, rtsp_addr))
     #t_read_video = threading.Thread(target=read_video_vlc, args=(dq, rtsp_addr))
-    t_put_data = threading.Thread(target=put_data, args=(camerId,))
+    t_put_data = threading.Thread(target=put_data, args=(camerId, check_list))
 
     t_read_video.start() 
     t_put_data.start() 
@@ -333,7 +344,7 @@ def get_detect(rtsp_addr, camerId):
     my_track_dict = {} #save the info of track_id
     
 
-    save_file = mk_dir()
+    #save_file = mk_dir()  #保存图片，增加样本
     num = 0    #有数据循环次数
     t1 = time.time()  #重新检测时间初始值
     my_result = {} #存储缓冲数据
@@ -343,6 +354,7 @@ def get_detect(rtsp_addr, camerId):
     fbox = []
     bbox = []
     person_dit = {}
+    face_dit = {} #人脸统计
     
     #加载电子围栏
     try:
@@ -369,7 +381,7 @@ def get_detect(rtsp_addr, camerId):
             print("=====================", img.shape)
         else:
             print("------------------------------>dq------------------->is nan..............")
-            time.sleep(0.02)
+            time.sleep(0.04)
             continue
                
         start_time = time.time()  #开始计时,测试单贞照片处理时间
@@ -387,15 +399,17 @@ def get_detect(rtsp_addr, camerId):
         frame = img.copy()
 
         #增加拆解阶段的判断
+        stage_lis = []
         if num % 10 == 1:
             stage_result = mul_stage_model(img)
             #print(stage_result)
             for i in range(len(stage_result)):
-                if stage_result[i, 2] > 0.95:
-                    mystage = int(stage_result[i,1])
-                    #mytest = stage_result[i]
-                    print(stage_result[i,1], "----------mystage-------->"*2, stage_result[i, 2])
-                    break
+                if stage_result[i, 2] > 0.50:
+                    stage = int(stage_result[i,1])
+                    stage_lis.append(stage)
+                    print("----------mystage-------->"*2, stage_result[i, 1], stage_result[i, 2])
+            if 2 in stage_lis:
+                mystage = 2
             else:
                 mystage = 1
 
@@ -403,13 +417,13 @@ def get_detect(rtsp_addr, camerId):
             #cv2.rectangle(show_image, (int(mytest[3]*1280), int(mytest[4]*720)), (int(mytest[3]*1280+mytest[5]*1280), int(mytest[4]*720+mytest[6]*720)), (0, 149, 230), 1)
           
         #mystage = 1
-        cv2.rectangle(show_image, (400, 10), (880, 100), (120, 149, 230), -1)
+        cv2.rectangle(show_image, (10, 10), (400, 100), (120, 149, 230), -1)
         if mystage == 2:
-            show_image = add_ch_text(show_image, "第一拆解阶段:", 410, 15, textColor=(255, 255, 255), textSize=30)
-            show_image = add_ch_text(show_image, "仅检测衣服和鞋子。", 410, 60, textColor=(255, 255, 255), textSize=30)   
+            show_image = add_ch_text(show_image, "第一拆解阶段:", 15, 15, textColor=(255, 255, 255), textSize=30)
+            show_image = add_ch_text(show_image, "仅检测衣服和鞋子", 15, 60, textColor=(255, 255, 255), textSize=30)   
         elif mystage == 1:
-            show_image = add_ch_text(show_image, "第二拆解阶段:", 410, 15, textColor=(255, 255, 255), textSize=30)
-            show_image = add_ch_text(show_image, "帽子、衣服、手套、鞋子全部检测。", 410, 60, textColor=(255, 255, 255), textSize=30)
+            show_image = add_ch_text(show_image, "第二拆解阶段:", 15, 15, textColor=(255, 255, 255), textSize=30)
+            show_image = add_ch_text(show_image, "检测帽子、衣服、手套、鞋子", 15, 60, textColor=(255, 255, 255), textSize=30)
 
         #the predict of person.
         boxes = []
@@ -514,14 +528,23 @@ def get_detect(rtsp_addr, camerId):
                 if my_key not in my_result:
                     #不要直接等于，会出错，深浅拷贝问题
                     my_result[my_key] = my_track_dict[my_key].copy()
-                    my_result[my_key]["mysum"] = 0
+                    my_result[my_key]["mysum"] = 1
+                    my_result[my_key]["mystart"] = time.time()
                     # print("++++++init++++++++++",my_result[my_key])
                 else:
                     for key1 in  my_track_dict[my_key]:
                         if key1 in my_result[my_key]:
                             if key1 == "face":
-                                if my_track_dict[my_key]["face"] != "":
-                                    my_result[my_key]["face"] = my_track_dict[my_key]["face"]
+                                if my_track_dict[my_key]["face"]:
+                                    if my_track_dict[my_key]["face"] == "-99":
+                                        if my_key in face_dit:
+                                            pass
+                                        else:
+                                            my_result[my_key]["face"] = my_track_dict[my_key]["face"]  
+                                    else:
+                                        face_dit[my_key] = my_track_dict[my_key]["face"]  
+                                        my_result[my_key]["face"] = my_track_dict[my_key]["face"]
+                                    
                             else:
                                 my_result[my_key][key1] = my_result[my_key][key1] + my_track_dict[my_key][key1]
                         else:
@@ -529,8 +552,9 @@ def get_detect(rtsp_addr, camerId):
 
                 my_result[my_key]["mysum"] = my_result[my_key]["mysum"] + 1                
                 # print(my_key, "-------->", my_result[my_key])
-
-                if my_result[my_key]["mysum"] > 10:
+                
+                #"mysum" conbined with "mystart" decide to put data frequency.
+                if my_result[my_key]["mysum"] > 20 or (time.time()-my_result[my_key]["mystart"])>5:
                     # print("-------->", my_result[my_key])
                     my_cum_result = {}
                     for key2 in my_result[my_key]:
@@ -544,11 +568,11 @@ def get_detect(rtsp_addr, camerId):
 
                     del my_cum_result["mysum"]  #删除“mysum”属性再上传
                     del my_result[my_key]    #减少内存负担，上传的人员要删除
-                    
 
-                    #if "coat" in my_cum_result and "hat" in my_cum_result and "gloves" in my_cum_result and "shoes" in my_cum_resulti:
                     print(my_cum_result)
-                    if "coat" in my_cum_result and "shoes" in my_cum_result:
+                    #if "coat" in my_cum_result and "hat" in my_cum_result and "gloves" in my_cum_result and "shoes" in my_cum_resulti:
+                    #if "coat" in my_cum_result and "shoes" in my_cum_result:
+                    if "coat" in my_cum_result:
                         pic_name = str(camerId) +  "_" + str(int(time.time())) + "_" + my_key
                         # put_data(my_key, my_result, frame)
                         print("--------put_data-------->"*2)
@@ -566,7 +590,7 @@ def get_detect(rtsp_addr, camerId):
             #cv2.imshow('aidong_unicom', show_image)
             #key = cv2.waitKey(1)
 
-            show_image = cv2.resize(show_image, (640, 360))
+            show_image = cv2.resize(show_image, (600, 315))
             ret2, jpeg = cv2.imencode('.jpg', show_image)
             yield (b'--frame\r\n'
                    b'application/octet-stream: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n\r\n')
@@ -581,14 +605,14 @@ def get_detect(rtsp_addr, camerId):
             #cv2.imshow('aidong_unicom', show_image)
             #key = cv2.waitKey(1)  
 
-            show_image = cv2.resize(show_image, (640, 360))
+            show_image = cv2.resize(show_image, (600, 315))
             ret2, jpeg = cv2.imencode('.jpg', show_image)
             jpg_data = jpeg.tobytes()
             yield (b'--frame\r\n'
                    b'application/octet-stream: image/jpeg\r\n\r\n' + jpg_data + b'\r\n\r\n')
-            #end_time = time.time()  #结束计时,测试单贞照片处理时间
-            #my_one_time = (end_time - start_time) * 1000
-            #print("=====b{}=====".format(num), my_one_time)
+            end_time = time.time()  #结束计时,测试单贞照片处理时间
+            my_one_time = (end_time - start_time) * 1000
+            print("=====b{}=====".format(num), my_one_time)
 
              
 

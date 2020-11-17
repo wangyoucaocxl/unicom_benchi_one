@@ -145,37 +145,42 @@ def muti_attr(image, mystage):
     myset = sorted(set(lis))
     if mystage == 2:
         for key in myset:
-            if key == 3:
-                label_dict["coat"] = 1
-            elif key == 4:
-                label_dict["coat"] = 0
+            if key == 5:
+                label_dict["coat"] = 0    #deep_coat,去奔驰部署时可更改设置
+            elif key == 6:
+                label_dict["coat"] = 1    #blue_coat
             elif key == 7:
-                label_dict["shoes"] = 1  #shoes,去奔驰部署时可更改设置
+                label_dict["coat"] = 0    #no_coat
             elif key == 8:
-                label_dict["shoes"] = 0  
+                label_dict["shoes"] = 0   #deep__shoes,去奔驰部署时可更改设置
             elif key == 9:
-                label_dict["coat"] = 0   #tshirt,去奔驰部署时可更改设置
+                label_dict["shoes"] = 1   #star_shoes
+            elif key == 10:
+                label_dict["coat"] = 0    #no_shoes,去奔驰部署时可更改设置
+    
                 
     elif mystage == 1:
         for key in myset:
             if key == 1:
-                label_dict["hat"] = 1
+                label_dict["hat"] = 1    #hat
             elif key == 2:
-                label_dict["hat"] = 0
+                label_dict["hat"] = 0    #no_hat
             elif key == 3:
-                label_dict["coat"] = 1
+                label_dict["gloves"] = 1  #gloves
             elif key == 4:
-                label_dict["coat"] = 0
+                label_dict["gloves"] = 0   #no_gloves
             elif key == 5:
-                label_dict["gloves"] = 1
+                label_dict["coat"] = 0    #deep_coat,去奔驰部署时可更改设置
             elif key == 6:
-                label_dict["gloves"] = 0
+                label_dict["coat"] = 1    #blue_coat
             elif key == 7:
-                label_dict["shoes"] = 1   #shoes,去奔驰部署时可更改设置
+                label_dict["coat"] = 0    #no_coat
             elif key == 8:
-                label_dict["shoes"] = 0
+                label_dict["shoes"] = 0   #deep__shoes,去奔驰部署时可更改设置
             elif key == 9:
-                label_dict["coat"] = 0    #tshirt,去奔驰部署时可更改设置
+                label_dict["shoes"] = 1   #star_shoes
+            elif key == 10:
+                label_dict["shoes"] = 0    #no_shoes,去奔驰部署时可更改设置
     
     return label_dict
 
@@ -250,9 +255,10 @@ def draw_person_attr(show_image, label_dict, pbox, control_color):
         elif key == "face":
             a = "姓名"
             b = label_dict[key]
+            if b == "-99":
+                b = "非法人员"
             text= a + ":" + str(b)
-            if label_dict[key] == "":
-                text= a + ":" + str(" ")
+            if label_dict[key] == "" or label_dict[key] == "-99":
                 show_image = add_ch_text(show_image,  text, end_x, start_y+i_count, textColor=(255, 0, 0), textSize=30)
                 #cv2.putText(show_image,text,(end_x,start_y+i_count),font,0.7,(0,255,0),2)
             else:
