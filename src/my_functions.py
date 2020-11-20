@@ -146,7 +146,7 @@ def muti_attr(image, mystage):
     if mystage == 2:
         for key in myset:
             if key == 5:
-                label_dict["coat"] = 0    #deep_coat,去奔驰部署时可更改设置
+                label_dict["coat"] = 1    #deep_coat,去奔驰部署时可更改设置
             elif key == 6:
                 label_dict["coat"] = 1    #blue_coat
             elif key == 7:
@@ -156,7 +156,7 @@ def muti_attr(image, mystage):
             elif key == 9:
                 label_dict["shoes"] = 1   #star_shoes
             elif key == 10:
-                label_dict["coat"] = 0    #no_shoes,去奔驰部署时可更改设置
+                label_dict["shoes"] = 0    #no_shoes,去奔驰部署时可更改设置
     
                 
     elif mystage == 1:
@@ -170,7 +170,7 @@ def muti_attr(image, mystage):
             elif key == 4:
                 label_dict["gloves"] = 0   #no_gloves
             elif key == 5:
-                label_dict["coat"] = 0    #deep_coat,去奔驰部署时可更改设置
+                label_dict["coat"] = 1    #deep_coat,去奔驰部署时可更改设置
             elif key == 6:
                 label_dict["coat"] = 1    #blue_coat
             elif key == 7:
@@ -253,7 +253,7 @@ def draw_person_attr(show_image, label_dict, pbox, control_color):
             else:
                 b = "不合格"
         elif key == "face":
-            a = "姓名"
+            a = "工号"
             b = label_dict[key]
             if b == "-99":
                 b = "非法人员"

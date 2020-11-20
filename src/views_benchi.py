@@ -36,16 +36,15 @@ cors.init_app(app)
 main = Blueprint('main', __name__)
 app.register_blueprint(main,url_prefix = "")
 
-camer_list = ["rtsp://demo.easydss.com:10054/Seven",
-              "rtsp://demo.easydss.com:10054/xDClMP5Mg",
+camer_list = ["rtsp://demo.easydss.com:10054/xDClMP5Mg",
               "rtsp://demo.easydss.com:10054/shilei_kernel_test",
-              "rtsp://demo.easydss.com:10554/aidong_demo",
-              "rtsp://admin:ad123456@192.168.199.220/Streaming/Channels/1"
+              "",
+              ""
               ]
-camer_list = ["rtsp://demo.easydss.com:10054/xDClMP5Mg"]
+#camer_list = ["rtsp://demo.easydss.com:10054/xDClMP5Mg"]
 #camer_list = ["rtsp://demo.easydss.com:10054/7o_G1uhMR"]
 camer_count = 1
-q_put_img = deque(maxlen=1)
+#q_put_img = deque(maxlen=1)
 check_list = deque(maxlen=5)
 control_color = True
 
@@ -147,7 +146,7 @@ def get_fence(camera_id):
     print("---------pts----------:", pts)
     return pts
 
-def put_data(camerId, check_list):
+def put_data(camerId, check_list, q_put_img):
     while True:
         time.sleep(0.5)
         try:
@@ -332,10 +331,11 @@ def new_loc(lis1, lis2):
 def get_detect(rtsp_addr, camerId):
     global control_color
     dq = deque(maxlen=5)
-    
+    q_put_img = deque(maxlen=1)
+
     t_read_video = threading.Thread(target=read_video, args=(dq, rtsp_addr))
     #t_read_video = threading.Thread(target=read_video_vlc, args=(dq, rtsp_addr))
-    t_put_data = threading.Thread(target=put_data, args=(camerId, check_list))
+    t_put_data = threading.Thread(target=put_data, args=(camerId, check_list,q_put_img))
 
     t_read_video.start() 
     t_put_data.start() 
@@ -536,15 +536,17 @@ def get_detect(rtsp_addr, camerId):
                         if key1 in my_result[my_key]:
                             if key1 == "face":
                                 if my_track_dict[my_key]["face"]:
-                                    if my_track_dict[my_key]["face"] == "-99":
-                                        if my_key in face_dit:
-                                            pass
-                                        else:
-                                            my_result[my_key]["face"] = my_track_dict[my_key]["face"]  
+                                    if my_key not in face_dit:
+                                        face_dit[my_key] = 0
                                     else:
-                                        face_dit[my_key] = my_track_dict[my_key]["face"]  
-                                        my_result[my_key]["face"] = my_track_dict[my_key]["face"]
-                                    
+                                        if my_track_dict[my_key]["face"] == "-99":
+                                            face_dit[my_key] -= 1
+                                            if face_dit[my_key] < -5:
+                                                my_result[my_key]["face"] = my_track_dict[my_key]["face"]
+                                        else:
+                                            face_dit[my_key] += 1
+                                            if face_dit[my_key] > 5:
+                                                my_result[my_key]["face"] = my_track_dict[my_key]["face"]
                             else:
                                 my_result[my_key][key1] = my_result[my_key][key1] + my_track_dict[my_key][key1]
                         else:
@@ -586,14 +588,20 @@ def get_detect(rtsp_addr, camerId):
             my_one_time = (end_time - start_time) * 1000
             print("====={}=====".format(num), my_one_time)  
             print("-------------->", num, my_result)
+            os.system(f"echo ========{my_one_time}======= >> gz_time.txt")
             #cv2.namedWindow("aidong_unicom", 0)
             #cv2.imshow('aidong_unicom', show_image)
             #key = cv2.waitKey(1)
 
-            show_image = cv2.resize(show_image, (600, 315))
+            show_image = cv2.resize(show_image, (600, 350))
             ret2, jpeg = cv2.imencode('.jpg', show_image)
             yield (b'--frame\r\n'
                    b'application/octet-stream: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n\r\n')
+
+            end_time1 = time.time()  #结束计时,测试单贞照片处理时间
+            my_one_time1 = (end_time1 - start_time) * 1000
+            os.system(f"echo ========{my_one_time1}======= >> put_data_time.txt")
+
         else:
             #draw the gurdline.画警戒线
             draw_muti(show_image, points2)
@@ -605,7 +613,7 @@ def get_detect(rtsp_addr, camerId):
             #cv2.imshow('aidong_unicom', show_image)
             #key = cv2.waitKey(1)  
 
-            show_image = cv2.resize(show_image, (600, 315))
+            show_image = cv2.resize(show_image, (600, 350))
             ret2, jpeg = cv2.imencode('.jpg', show_image)
             jpg_data = jpeg.tobytes()
             yield (b'--frame\r\n'
