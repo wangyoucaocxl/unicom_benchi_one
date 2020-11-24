@@ -36,13 +36,13 @@ cors.init_app(app)
 main = Blueprint('main', __name__)
 app.register_blueprint(main,url_prefix = "")
 
-camer_list = ["rtsp://demo.easydss.com:10054/xDClMP5Mg",
+camer_list = ["rtsp://demo.easydss.com:10054/unicom_test",
               "rtsp://demo.easydss.com:10054/shilei_kernel_test",
               "",
               ""
               ]
 #camer_list = ["rtsp://demo.easydss.com:10054/xDClMP5Mg"]
-#camer_list = ["rtsp://demo.easydss.com:10054/7o_G1uhMR"]
+#camer_list = ["rtsp://demo.easydss.com:10054/S8pyIM2Gg"]
 camer_count = 1
 #q_put_img = deque(maxlen=1)
 check_list = deque(maxlen=5)
@@ -404,7 +404,7 @@ def get_detect(rtsp_addr, camerId):
             stage_result = mul_stage_model(img)
             #print(stage_result)
             for i in range(len(stage_result)):
-                if stage_result[i, 2] > 0.50:
+                if stage_result[i, 2] > 0.10:
                     stage = int(stage_result[i,1])
                     stage_lis.append(stage)
                     print("----------mystage-------->"*2, stage_result[i, 1], stage_result[i, 2])
@@ -545,7 +545,7 @@ def get_detect(rtsp_addr, camerId):
                                                 my_result[my_key]["face"] = my_track_dict[my_key]["face"]
                                         else:
                                             face_dit[my_key] += 1
-                                            if face_dit[my_key] > 5:
+                                            if face_dit[my_key] > 3:
                                                 my_result[my_key]["face"] = my_track_dict[my_key]["face"]
                             else:
                                 my_result[my_key][key1] = my_result[my_key][key1] + my_track_dict[my_key][key1]
